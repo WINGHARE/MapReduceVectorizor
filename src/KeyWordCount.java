@@ -148,7 +148,7 @@ public class KeyWordCount {
 		for (IntArrayWritable val : values) {
 	        sum = vector_add(sum,val.toIntArray());
 	    }
-		
+		System.out.println(sum);
 		context.write(key, new IntArrayWritable(sum));
 		
 	}	  
@@ -159,6 +159,7 @@ public class KeyWordCount {
     Job job = Job.getInstance(conf, "key word count");
     job.setJarByClass(WordCount.class);
     job.setMapperClass(TokenizerMapper.class);
+    job.setMapOutputValueClass(IntArrayWritable.class);
     //job.setCombinerClass(IntSumCombiner.class);
     job.setReducerClass(CountVectorReducer.class);
     job.setOutputKeyClass(Text.class);
