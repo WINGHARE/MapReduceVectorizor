@@ -21,6 +21,7 @@ import org.apache.hadoop.mapreduce.lib.input.FileSplit;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 import org.mortbay.log.Log;
 
+//first
 public class KeyWordCount {
   
 	/*private final static String[] top100Word = { "the", "be", "to", "of", "and", "a", "in", "that", "have", "i",
