@@ -110,7 +110,7 @@ public class KeyWordCount {
 	    
 	}   
     
-  public int[] vector_add(int a [],int b []){
+  public static int[] vector_add(int a [],int b []){
 	  if(a.length!=b.length){
 		  return null;
 	  }
@@ -123,7 +123,7 @@ public class KeyWordCount {
 	  return result;
   }
 
-  public static class IntSumCombiner
+/*  public static class IntSumCombiner
        extends Reducer<Text,IntWritable,Text,IntWritable> {
     private IntWritable result = new IntWritable();
 
@@ -138,16 +138,18 @@ public class KeyWordCount {
       context.write(key, result);
     }
   }
-  
+  */
   public static class CountVectorReducer extends Reducer<Text,IntArrayWritable,Text,IntArrayWritable> {
 
 	@Override
 	protected void reduce(Text key, Iterable<IntArrayWritable> values,Context context) 
 			throws IOException, InterruptedException {
 		int [] sum = new int[100];
-		/*for (IntArrayWritable val : values) {
-	        sum += val.get();
-	    }*/
+		for (IntArrayWritable val : values) {
+	        sum = vector_add(sum,val.toIntArray());
+	    }
+		
+		context.write(key, new IntArrayWritable(sum));
 		
 	}	  
   }
