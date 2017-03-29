@@ -69,7 +69,11 @@ public class KeyWordCount {
 	    public IntArrayWritable(IntWritable[] intWritables) {
 	        super(IntWritable.class, intWritables);
 	    }
-	    
+	    public IntArrayWritable(){
+	    	//IntWritable i = new IntWritable();
+	        super(IntWritable.class);
+
+	    }
 	    public IntArrayWritable(int[] ints) {
 	        super(IntWritable.class);
 	        IntWritable[] intWritables = new IntWritable[ints.length];
