@@ -99,9 +99,30 @@ public class KeyWordCount {
 	        }
 	        return result.substring(0, result.length()-1);
 	    }
+	    public int[] toIntArray(){
+	        IntWritable[] values = get();
+	        int [] results = new int[values.length];
+	        for(int i=0;i<results.length;i++){
+	        	results[i]=values[i].get();
+	        }
+	        return results;
+	    }
 	    
 	}   
     
+  public int[] vector_add(int a [],int b []){
+	  if(a.length!=b.length){
+		  return null;
+	  }
+	  
+	  int result [] = new int[a.length];
+	  
+	  for(int i=0;i<a.length;i++){
+		  result[i]=a[i]+b[i];
+	  }
+	  return result;
+  }
+
   public static class IntSumCombiner
        extends Reducer<Text,IntWritable,Text,IntWritable> {
     private IntWritable result = new IntWritable();
@@ -119,33 +140,14 @@ public class KeyWordCount {
   }
   
   public static class CountVectorReducer extends Reducer<Text,IntArrayWritable,Text,IntArrayWritable> {
-	  private Map<String,int[]> localMap = new HashMap<String,int[]>();
 
 	@Override
 	protected void reduce(Text key, Iterable<IntArrayWritable> values,Context context) 
 			throws IOException, InterruptedException {
-		int sum =0;
+		int [] sum = new int[100];
 		/*for (IntArrayWritable val : values) {
 	        sum += val.get();
 	    }*/
-		String keys[] = key.toString().split(" ");
-		
-		if(localMap.containsKey(keys[0])== false){
-			int[] temp = new int[100];
-			int index = top100Word.indexOf(keys[1]);			
-			temp[index]+=sum;
-			localMap.put(keys[0], temp);			
-		}else{
-			int[] temp = localMap.get(keys[0]);
-			int index = top100Word.indexOf(keys[1]);			
-			temp[index]+=sum;
-			localMap.put(keys[0], temp);	
-		}
-		for(Map.Entry<String, int[]> entry : localMap.entrySet()){//for begins
-			//Text k = new Text(entry.getKey());
-			IntArrayWritable a = new IntArrayWritable(entry.getValue());
-		  	context.write(new Text(entry.getKey()),a);
-		}//for ends
 		
 	}	  
   }
