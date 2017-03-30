@@ -12,6 +12,7 @@ import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.ArrayWritable;
 import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.Text;
+import org.apache.hadoop.io.Writable;
 import org.apache.hadoop.mapreduce.InputSplit;
 import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.Mapper;
@@ -83,7 +84,7 @@ public class KeyWordCount {
 	        }
 	        set(intWritables);
 	    }
-
+/*
 	    @Override
 	    public IntWritable[] get() {
 	        return (IntWritable[]) super.get();
@@ -109,12 +110,12 @@ public class KeyWordCount {
 		public Object toArray() {
 			// TODO Auto-generated method stub
 			return super.toArray();
-		}
+		}*/
 		public int[] toIntArray(){
-	        IntWritable[] values = get();
+			Writable[] values=super.get();
 	        int [] results = new int[values.length];
 	        for(int i=0;i<results.length;i++){
-	        	results[i]=values[i].get();
+	        	results[i]=((IntWritable)values[i]).get();
 	        }
 	        return results;
 	    }
@@ -157,8 +158,17 @@ public class KeyWordCount {
 			throws IOException, InterruptedException {
 		int [] sum = new int[100];
 		int count =0;
-		String s = values.toString();
-		System.out.println(s);
+		
+		try{
+			IntArrayWritable test = values.iterator().next();
+			int[] a = test.toIntArray();
+		//	Object[] a=test.toArray();
+			System.out.println(test.getClass());
+			
+		}catch(Exception ex){
+			System.out.println(ex);
+		}
+		
 		for (IntArrayWritable val : values) {
 		
 	        /*sum = vector_add(sum,val.toIntArray());*/
@@ -180,7 +190,7 @@ public class KeyWordCount {
     //job.setCombinerClass(IntSumCombiner.class);
     job.setReducerClass(CountVectorReducer.class);
     job.setOutputKeyClass(Text.class);
-    job.setOutputValueClass(IntWritable.class);
+    job.setOutputValueClass(IntArrayWritable.class);
     FileInputFormat.addInputPath(job, new Path(args[0]));
     FileOutputFormat.setOutputPath(job, new Path(args[1]));
     System.exit(job.waitForCompletion(true) ? 0 : 1);
