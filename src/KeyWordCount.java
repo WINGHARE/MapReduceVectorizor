@@ -119,7 +119,7 @@ public class KeyWordCount {
       /* Split and get words from text files
        * Unwanted terms is replaced and words are converted to lowercase
        * */
-      String[] words = value.toString().replaceAll("[^a-zA-Z ]", " ").toLowerCase().split("\\s+");  
+      String[] words = value.toString().replaceAll("[^a-zA-Z0-9 ]", " ").toLowerCase().split("\\s+");  
       
       /*
        * Search if words are in the top list
