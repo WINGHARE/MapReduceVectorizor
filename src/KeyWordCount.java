@@ -60,7 +60,7 @@ public class KeyWordCount {
 			int[] temp = new int[100];
 			int index = top100Word.indexOf(w);			
 			temp[index]+=1;
-    		context.write(new Text(filename), new IntArrayWritable(temp));
+    		context.write(new Text(filename.trim()), new IntArrayWritable(temp));
     	}
       }
     }
@@ -71,7 +71,6 @@ public class KeyWordCount {
 	        super(IntWritable.class, intWritables);
 	    }
 	    public IntArrayWritable(){
-	    	//IntWritable i = new IntWritable();
 	        super(IntWritable.class);
 
 	    }
@@ -84,21 +83,10 @@ public class KeyWordCount {
 	        }
 	        set(intWritables);
 	    }
-/*
-	    @Override
-	    public IntWritable[] get() {
-	        return (IntWritable[]) super.get();
-	    }
 
 	    @Override
-	    public void write(DataOutput arg0) throws IOException {
-	        for(IntWritable data : get()){
-	            data.write(arg0);
-	        }
-	    }
-	    @Override
 	    public String toString() {
-	        IntWritable[] values = get();
+	        IntWritable[] values = (IntWritable[]) super.get();
 	        String result="";
 	        for(IntWritable value :values){
 	        	result+=value.toString()+",";  	
@@ -106,11 +94,7 @@ public class KeyWordCount {
 	        return result.substring(0, result.length()-1);
 	    }
 	    
-	    @Override
-		public Object toArray() {
-			// TODO Auto-generated method stub
-			return super.toArray();
-		}*/
+	  
 		public int[] toIntArray(){
 			Writable[] values=super.get();
 	        int [] results = new int[values.length];
@@ -135,46 +119,19 @@ public class KeyWordCount {
 	  return result;
   }
 
-/*  public static class IntSumCombiner
-       extends Reducer<Text,IntWritable,Text,IntWritable> {
-    private IntWritable result = new IntWritable();
-
-    public void reduce(Text key, Iterable<IntWritable> values,
-                       Context context
-                       ) throws IOException, InterruptedException {
-      int sum = 0;
-      for (IntWritable val : values) {
-        sum += val.get();
-      }
-      result.set(sum);
-      context.write(key, result);
-    }
-  }
-  */
   public static class CountVectorReducer extends Reducer<Text,IntArrayWritable,Text,IntArrayWritable> {
 
 	@Override
 	protected void reduce(Text key, Iterable<IntArrayWritable> values,Context context) 
 			throws IOException, InterruptedException {
 		int [] sum = new int[100];
-		int count =0;
-		
-		try{
-			IntArrayWritable test = values.iterator().next();
-			int[] a = test.toIntArray();
-		//	Object[] a=test.toArray();
-			System.out.println(test.getClass());
-			
-		}catch(Exception ex){
-			System.out.println(ex);
-		}
-		
+
 		for (IntArrayWritable val : values) {
 		
-	        /*sum = vector_add(sum,val.toIntArray());*/
-			count++;
+	        sum = vector_add(sum,val.toIntArray());
+			
 	    }
-		System.out.println(count);
+		
 		context.write(key, new IntArrayWritable(sum));
 		
 	}	  
@@ -187,7 +144,7 @@ public class KeyWordCount {
     job.setMapperClass(TokenizerMapper.class);
     job.setMapOutputValueClass(IntArrayWritable.class);
     
-    //job.setCombinerClass(IntSumCombiner.class);
+    job.setCombinerClass(CountVectorReducer.class);
     job.setReducerClass(CountVectorReducer.class);
     job.setOutputKeyClass(Text.class);
     job.setOutputValueClass(IntArrayWritable.class);
