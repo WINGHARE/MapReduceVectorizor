@@ -74,6 +74,7 @@ public class KeyWordCount {
 	        super(IntWritable.class);
 
 	    }
+	    
 	    public IntArrayWritable(int[] ints) {
 	        super(IntWritable.class);
 	        IntWritable[] intWritables = new IntWritable[ints.length];
@@ -103,7 +104,13 @@ public class KeyWordCount {
 	        }
 	        return result.substring(0, result.length()-1);
 	    }
-	    public int[] toIntArray(){
+	    
+	    @Override
+		public Object toArray() {
+			// TODO Auto-generated method stub
+			return super.toArray();
+		}
+		public int[] toIntArray(){
 	        IntWritable[] values = get();
 	        int [] results = new int[values.length];
 	        for(int i=0;i<results.length;i++){
@@ -149,10 +156,15 @@ public class KeyWordCount {
 	protected void reduce(Text key, Iterable<IntArrayWritable> values,Context context) 
 			throws IOException, InterruptedException {
 		int [] sum = new int[100];
+		int count =0;
+		String s = values.toString();
+		System.out.println(s);
 		for (IntArrayWritable val : values) {
-	        sum = vector_add(sum,val.toIntArray());
+		
+	        /*sum = vector_add(sum,val.toIntArray());*/
+			count++;
 	    }
-		System.out.println(sum);
+		System.out.println(count);
 		context.write(key, new IntArrayWritable(sum));
 		
 	}	  
@@ -164,6 +176,7 @@ public class KeyWordCount {
     job.setJarByClass(WordCount.class);
     job.setMapperClass(TokenizerMapper.class);
     job.setMapOutputValueClass(IntArrayWritable.class);
+    
     //job.setCombinerClass(IntSumCombiner.class);
     job.setReducerClass(CountVectorReducer.class);
     job.setOutputKeyClass(Text.class);
