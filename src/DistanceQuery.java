@@ -1,10 +1,8 @@
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-import java.util.StringTokenizer;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.IntWritable;
@@ -21,7 +19,9 @@ public class DistanceQuery {
 			32, 43, 30, 25, 46, 20, 25, 2, 61, 11, 63, 21, 9, 26, 9, 7, 48, 11, 27, 19, 4, 7, 20, 5, 45, 15, 13, 30,
 			17, 18, 21, 10, 26, 17, 15, 17, 15, 15, 13, 16, 4, 13, 11, 14, 13, 10, 15, 45, 9, 19, 11, 4, 2, 2, 2, 49,
 			10, 9, 12, 15, 18 }; // Please do not modify any value in this array
-  
+  /**
+   * Dedfine euclid_distance function to calculate euclid distance
+   * **/
   public static int euclid_distance(int[] a,int b [] ){
 	  if(a.length!=b.length){
 		  return 2147483647;
@@ -36,6 +36,9 @@ public class DistanceQuery {
 
   }
 
+  /**
+   * Dedfine strAryToIntAry function to convert string to array
+   * **/
   public static int[] strAryToIntAry(String[] str){
 	  if(str.length<1){return null;}
 	  int [] vector = new int [str.length];
@@ -44,7 +47,11 @@ public class DistanceQuery {
   	}
 	  return vector;
   }
-  
+  /**Define Mapper
+	 * Input : Documents
+	 * Output: <k,v>= <-,<docname,distance>>
+	 * All keys are the same to make sure they go to the same reducer
+	 * **/
   public static class DisantanceMapper
        extends Mapper<Object, Text, Text, Text>{
 
@@ -54,9 +61,7 @@ public class DistanceQuery {
     public void map(Object key, Text value, Context context
                     ) throws IOException, InterruptedException {
     	
-       
-    //  StringTokenizer itr = new StringTokenizer(value.toString());
-  	  String[] keyVal = value.toString().split("\\s");
+   	  String[] keyVal = value.toString().split("\\s");
   	  String[] nums = keyVal[1].split(",");
   	  int [] vector = strAryToIntAry(nums);
   	  word.set("-");
@@ -66,11 +71,15 @@ public class DistanceQuery {
     	
     }
   }
+  /**Define Reducer
+	 * Input : <k,v>= <-,<docname,distance>>
+	 * Output: <k,v>= <docname,distance>
+	 * Reducer sort input values
+	 * **/
 
   public static class IntDistanceReducer
        extends Reducer<Text,Text,Text,Text> {
-    private IntWritable result = new IntWritable(1);
-    List<String> distanceList=new ArrayList();
+    List<String> distanceList=new ArrayList<String>();
     
     private class KeyValCompare implements Comparator<String> {
 
@@ -81,8 +90,7 @@ public class DistanceQuery {
 			int v2 = Integer.parseInt(kv2.split(" ")[1]);
 			if(v1<v2) return 1;
 			return -1;
-		}
-    	
+		}	
     }
 
     public void reduce(Text key, Iterable<Text> values,
@@ -97,14 +105,13 @@ public class DistanceQuery {
        for(String str : distanceList){
            String[] kv = str.split(" ");
     	   context.write(new Text(kv[0]), new Text(kv[1]));
-       }
-       
+       }    
     }
   }
 
   public static void main(String[] args) throws Exception {
     Configuration conf = new Configuration();
-    Job job = Job.getInstance(conf, "word count");
+    Job job = Job.getInstance(conf, "distance query");
     job.setJarByClass(DistanceQuery.class);
     job.setMapperClass(DisantanceMapper.class);
     //job.setCombinerClass(IntDistanceReducer.class);
