@@ -57,8 +57,8 @@ public class EachDouctmentFrequency {
     }
   }
   /**Define Reducer
-	 * Input : <k,v>= <docname,vector>
-	 * Output: <k,v>= <docname,vector>
+	 * Input : <k,v>= <(word,document name),1>
+	 * Output: <k,v>= <(word,document name),n>
 	 * So Reducer can act as combiner
 	 * **/
 
