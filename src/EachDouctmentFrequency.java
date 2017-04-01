@@ -87,7 +87,7 @@ public class EachDouctmentFrequency {
   public static void main(String[] args) throws Exception {
     Configuration conf = new Configuration();
     Job job = Job.getInstance(conf, "key word count");
-    job.setJarByClass(WordCount.class);
+    job.setJarByClass(EachDouctmentFrequency.class);
     job.setMapperClass(TokenizerMapper.class);
     job.setMapOutputValueClass(IntWritable.class);
     
