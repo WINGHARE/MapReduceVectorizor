@@ -14,13 +14,12 @@ import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 
 public class WordCountPerDoc {
-	  /**Define Mapper
-		 * Input : <k,v>= <(word,docname),n>
-		 * Output: <k,v>= <docname,(word,n)>
-		 * While n is the count of word in article "docname"
-		 * **/
-
-  public static class TokenizerMapper
+	/**Define Mapper
+	 * Input : <k,v>= <(word,docname),n>
+	 * Output: <k,v>= <docname,(word,n)>
+	 * While n is the count of word in article "docname"
+	 * **/
+    public static class TokenizerMapper
        extends Mapper<Object, Text, Text, Text>{
 
     private final static IntWritable one = new IntWritable(1);
@@ -31,13 +30,16 @@ public class WordCountPerDoc {
     	/*
          * Mapper emits <docname,(word,n)>
          * Words in the same article will go to the same reducer.
-         *
+         * Because document name of our data is define as "class (sample_number)"
+         * So split function will split the document name into 2 parts（class and sample_number）. 
+         * keyVal = {(word,docname),n}
+         * newKey = {word,docname}
          * */
-      String[] keyVal = value.toString().split("\t"); 
-      String[] newKey = keyVal[0].split(" ");
+      String[] wordDocname_n = value.toString().split("\t"); 
+      String[] word_docname = wordDocname_n[0].split(" ");
      
-      context.write(new Text(newKey[1]+" "+newKey[2]), 
-    		        new Text(newKey[0]+" "+keyVal[1]));
+      context.write(new Text(word_docname[1]+" "+word_docname[2]), 
+    		        new Text(word_docname[0]+" "+wordDocname_n[1]));
       
     }
   }
