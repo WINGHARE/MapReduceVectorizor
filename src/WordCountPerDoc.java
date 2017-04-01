@@ -14,6 +14,11 @@ import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 
 public class WordCountPerDoc {
+	  /**Define Mapper
+		 * Input : <k,v>= <(word,docname),n>
+		 * Output: <k,v>= <docname,(word,n)>
+		 * While n is the count of word in article "docname"
+		 * **/
 
   public static class TokenizerMapper
        extends Mapper<Object, Text, Text, Text>{
@@ -23,19 +28,25 @@ public class WordCountPerDoc {
 
     public void map(Object key, Text value, Context context
                     ) throws IOException, InterruptedException {
+    	/*
+         * Mapper emits <docname,(word,n)>
+         * Words in the same article will go to the same reducer.
+         *
+         * */
       String[] keyVal = value.toString().split("\t"); 
       String[] newKey = keyVal[0].split(" ");
-     /* StringTokenizer itr = new StringTokenizer(value.toString());
-      while (itr.hasMoreTokens()) {
-    	System.out.println(value);
-        word.set(itr.nextToken());
-        context.write(word, new Text("Text"));
-      }*/
+     
       context.write(new Text(newKey[1]+" "+newKey[2]), 
     		        new Text(newKey[0]+" "+keyVal[1]));
       
     }
   }
+
+  /**Define Reducer
+	 * Input : <k,v>= <docname,(word,n)>
+	 * Output: <k,v>= <(docname,word),(n,N)>
+	 * While N is the length of each article
+	 * **/
 
   public static class IntSumReducer
        extends Reducer<Text,Text,Text,Text> {
@@ -52,23 +63,26 @@ public class WordCountPerDoc {
        *
        * */
       Map<String,String> localMap = new HashMap<String,String>();
-      
+      /*
+       * Iterative sum up n which represents the length of each article
+       *
+       * */
       for (Text val : values) {
     	  String [] word_n = val.toString().split(" ");
     	  int n = Integer.parseInt(word_n[1]);
     	  N += n;
     	  localMap.put(word_n[0], word_n[1]);
       }
-      
-    //  values.iterator().
+      /*
+       * Iterative emit <K,v> = <(word,docName),(n,N)>
+       *
+       * */
       for(Map.Entry<String, String> entry : localMap.entrySet()){//for begins
     	  String word = (String)entry.getKey();
     	  String n = (String)entry.getValue();
     	  context.write(new Text(word+" "+docName), 
     			  new Text(n+" "+N));
-	  	  //context.write((Text)entry.getKey(),new IntWritable((int)entry.getValue()));
-	  }//for ends
-      
+	  }//for ends     
     }
   }
 
