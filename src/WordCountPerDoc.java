@@ -1,4 +1,6 @@
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.StringTokenizer;
 
 import org.apache.hadoop.conf.Configuration;
@@ -43,18 +45,29 @@ public class WordCountPerDoc {
                        ) throws IOException, InterruptedException {
       int N = 0;
       String docName = key.toString();
-       
+      
+      /*
+       * Hadoop cannot re-iterate Iterable so we cached information
+       * Cached map will have a format of <word,n>
+       *
+       * */
+      Map<String,String> localMap = new HashMap<String,String>();
+      
       for (Text val : values) {
     	  String [] word_n = val.toString().split(" ");
     	  int n = Integer.parseInt(word_n[1]);
     	  N += n;
-      }
-      for (Text val : values) {
-    	  String [] word_n = val.toString().split(" ");
-    	  context.write(new Text(word_n[0]+" "+docName),
-    			  new Text(word_n[1]+" "+N));
+    	  localMap.put(word_n[0], word_n[1]);
       }
       
+    //  values.iterator().
+      for(Map.Entry<String, String> entry : localMap.entrySet()){//for begins
+    	  String word = (String)entry.getKey();
+    	  String n = (String)entry.getValue();
+    	  context.write(new Text(word+" "+docName), 
+    			  new Text(n+" "+N));
+	  	  //context.write((Text)entry.getKey(),new IntWritable((int)entry.getValue()));
+	  }//for ends
       
     }
   }
