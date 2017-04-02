@@ -5,7 +5,6 @@ import java.util.Comparator;
 import java.util.List;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
-import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.Mapper;
@@ -55,7 +54,6 @@ public class DistanceQuery {
   public static class DisantanceMapper
        extends Mapper<Object, Text, Text, Text>{
 
-    private final static IntWritable one = new IntWritable(1);
     private Text word = new Text();
 
     public void map(Object key, Text value, Context context
