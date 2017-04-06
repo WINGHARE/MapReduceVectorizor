@@ -4,7 +4,6 @@ import java.util.Map;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.DoubleWritable;
-import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.Mapper;
@@ -41,8 +40,11 @@ public class TFIDF {
       double m = Double.parseDouble(n_N_m[2]);
       double TF_IDF = (n/N)*Math.log(numberOfDocuments/m);
      
+      if(1<=m && m<= 0.8 * numberOfDocuments){
+    	  System.out.println((m/numberOfDocuments));
       context.write(new Text(wordDocname_nNm[0]), 
     		        new DoubleWritable(TF_IDF));
+      }
       
     }
   }
