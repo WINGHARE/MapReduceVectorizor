@@ -71,8 +71,8 @@ public class WordDocument {
     	  m += i;
     	  String n = docname_n_N_1[2];
     	  String N = docname_n_N_1[3];
-    	  String docname_n_N_m = new String(n+" "+N+" "+m);
-    	  localMap.put(docname_n_N_1[0]+docname_n_N_1[1], docname_n_N_m);
+    	  String docname_n_N = new String(n+" "+N);
+    	  localMap.put(docname_n_N_1[0]+docname_n_N_1[1], docname_n_N);
       }
       /*
        * Iterative emit <K,v> = <(word,docName),(n,N,m)>
@@ -80,9 +80,9 @@ public class WordDocument {
        * */
       for(Map.Entry<String, String> entry : localMap.entrySet()){//for begins
     	  String docName = (String)entry.getKey();
-    	  String docName_n_N_m = (String)entry.getValue();
+    	  String docName_n_N = (String)entry.getValue();
     	  context.write(new Text(word+" "+docName), 
-    			  new Text(docName_n_N_m));
+    			  new Text(docName_n_N+" "+m));
 	  }//for ends     
     }
   }
