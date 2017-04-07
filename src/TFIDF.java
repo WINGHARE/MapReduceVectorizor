@@ -42,8 +42,7 @@ public class TFIDF {
     	  System.out.println((m/numberOfDocuments));
       context.write(new Text(wordDocname_nNm[0]), 
     		        new DoubleWritable(TF_IDF));
-      }
-      
+      }      
     }
   }
 
